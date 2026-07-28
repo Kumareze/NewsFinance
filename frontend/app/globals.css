@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #09090B;
+  --secondary-background: #18181B;
+  --card-background: #27272A;
+  --foreground: #FAFAFA;
+  --secondary-text: #A1A1AA;
+  --muted: #71717A;
+  --positive: #22C55E;
+  --negative: #EF4444;
+  --border: #3F3F46;
+  --hover: #3F3F46;
+}
+
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}

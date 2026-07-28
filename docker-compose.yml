@@ -1,0 +1,49 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: finpulse-backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./scraper:/app/scraper
+    ports:
+      - "8000:8000"
+    networks:
+      - finpulse-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: finpulse-frontend
+    restart: always
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "3000:3000"
+    networks:
+      - finpulse-network
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: finpulse-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - finpulse-network
+    depends_on:
+      - frontend
+      - backend
+
+networks:
+  finpulse-network:
+    driver: bridge
