@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     
     # Scraper Settings
     SCRAPER_INTERVAL: int = Field(default=30)  # in minutes
+
+    # Self-ping Settings (keep-alive)
+    SELF_PING_ENABLED: bool = Field(default=True)
+    SELF_PING_INTERVAL_MINUTES: int = Field(default=10)  # in minutes
+    SELF_PING_URL: str = Field(default="http://127.0.0.1:8000/health")
     
     # Security Settings
     SECRET_KEY: str = Field(default="super-secret-development-key-change-in-production")

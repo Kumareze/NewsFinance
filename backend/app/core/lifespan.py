@@ -37,9 +37,11 @@ logger = logging.getLogger(__name__)
 
 # Import the singleton scheduler instance
 from scraper.scheduler import scheduler  # noqa: E402
+from app.core.self_ping import self_ping_service  # noqa: E402
 
 # Track whether the scheduler was started to prevent duplicate starts
 _scheduler_started = False
+_self_ping_started = False
 
 
 def _is_reloader_process() -> bool:
@@ -81,6 +83,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         )
     else:
         _start_scheduler()
+        _start_self_ping()
 
     yield  # Application runs here
 
@@ -90,6 +93,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("=" * 60)
 
     _stop_scheduler()
+    _stop_self_ping()
 
     logger.info("FinPulse shutdown complete.")
 
@@ -131,3 +135,38 @@ def _stop_scheduler() -> None:
         logger.info("Scraper scheduler stopped gracefully.")
     except Exception as e:
         logger.error(f"Error stopping scraper scheduler: {e}")
+
+
+def _start_self_ping() -> None:
+    """Start the lightweight self-ping background worker."""
+    global _self_ping_started
+
+    if _self_ping_started:
+        logger.warning("Self-ping already started — skipping duplicate start.")
+        return
+
+    try:
+        self_ping_service.start()
+        if self_ping_service.is_running:
+            _self_ping_started = True
+            logger.info("Self-ping started successfully.")
+        else:
+            logger.info("Self-ping is disabled or did not start.")
+    except Exception as e:
+        logger.error(f"Failed to start self-ping service: {e}")
+
+
+def _stop_self_ping() -> None:
+    """Stop the lightweight self-ping background worker."""
+    global _self_ping_started
+
+    if not _self_ping_started and not self_ping_service.is_running:
+        logger.debug("Self-ping was not started — nothing to stop.")
+        return
+
+    try:
+        self_ping_service.stop()
+        _self_ping_started = False
+        logger.info("Self-ping stopped gracefully.")
+    except Exception as e:
+        logger.error(f"Error stopping self-ping service: {e}")

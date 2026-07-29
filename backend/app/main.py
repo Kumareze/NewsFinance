@@ -30,9 +30,14 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/health", tags=["Health"])
+async def health_check_lightweight():
+    """Ultra-lightweight health endpoint for keep-alive/self-ping."""
+    return {"status": "ok"}
+
+
 @app.get(f"{settings.API_V1_STR}/health", tags=["Health"])
-async def health_check():
-    """Perform a system health check."""
+async def health_check_detailed():
+    """Detailed health endpoint for diagnostics/monitoring."""
     return {
         "status": "healthy",
         "app": settings.APP_NAME,
