@@ -5,7 +5,22 @@
  * All requests go through NEXT_PUBLIC_API_URL.
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const DEFAULT_API_BASE = "http://localhost:8000/api/v1";
+
+function normalizeApiBase(raw?: string): string {
+  if (!raw) return DEFAULT_API_BASE;
+
+  // Defensive cleanup for accidental spaces/quotes in env var values.
+  const cleaned = raw.trim().replace(/^['"]|['"]$/g, "").replace(/\/+$/, "");
+  if (!cleaned) return DEFAULT_API_BASE;
+
+  // Accept both:
+  // - https://your-backend.onrender.com
+  // - https://your-backend.onrender.com/api/v1
+  return cleaned.endsWith("/api/v1") ? cleaned : `${cleaned}/api/v1`;
+}
+
+const API_BASE = normalizeApiBase(process.env.NEXT_PUBLIC_API_URL);
 
 export interface NewsArticle {
   id: string;
