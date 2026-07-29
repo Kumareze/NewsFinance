@@ -9,7 +9,8 @@ ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 
 # Copy Python package metadata
-COPY pyproject.toml ./
+COPY backend/pyproject.toml ./pyproject.toml
+COPY backend/uv.lock ./uv.lock
 
 # Install dependencies using uv sync (no dev dependencies)
 RUN uv sync --no-install-project --no-dev
@@ -24,7 +25,10 @@ COPY --from=builder /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy FastAPI backend application code
-COPY app /app/app
+COPY backend/app /app/app
+
+# Copy scraper package (lives at repository root)
+COPY scraper /app/scraper
 
 # Expose FastAPI port
 EXPOSE 8000
