@@ -11,6 +11,16 @@ import feedparser
 
 TEST_URLS = [
     ("CNBC Indonesia RSS", "https://www.cnbcindonesia.com/rss"),
+    ("Detik Finance", "https://finance.detik.com/rss"),
+    ("Bisnis.com", "https://feeds.feedburner.com/Bisniscom"),
+    ("Kontan Investasi", "https://investasi.kontan.co.id/rss"),
+    ("Kontan Keuangan", "https://keuangan.kontan.co.id/rss"),
+    ("Tempo Bisnis", "https://rss.tempo.co/?ch=bisnis"),
+    ("Antara Ekonomi", "https://www.antaranews.com/rss/ekonomi.xml"),
+    ("Republika Ekonomi", "https://www.republika.co.id/rss/ekonomi"),
+    ("IDX Channel", "https://www.idxchannel.com/rss"),
+    ("Katadata", "https://www.katadata.co.id/rss"),
+    ("CNN Indonesia Ekonomi", "https://www.cnnindonesia.com/ekonomi/rss"),
     ("CNBC US Top News", "https://www.cnbc.com/id/100003114/device/rss/rss.html"),
     ("CNBC US Markets", "https://www.cnbc.com/id/10000664/device/rss/rss.html"),
     ("Reuters Agency Feed", "https://www.reutersagency.com/feed/"),
