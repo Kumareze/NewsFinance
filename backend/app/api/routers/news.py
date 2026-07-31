@@ -29,7 +29,7 @@ def list_news(
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
     sentiment: Optional[str] = Query(None, description="Filter by sentiment"),
     source: Optional[str] = Query(None, description="Filter by source name"),
-    sort: str = Query("latest", regex="^(latest|oldest|positive|negative)$"),
+    sort: str = Query("latest", regex="^(latest|oldest|positive|negative|mixed)$"),
     q: Optional[str] = Query(None, description="Search query"),
     db: Session = Depends(get_db),
     service: NewsService = Depends(get_news_service),
