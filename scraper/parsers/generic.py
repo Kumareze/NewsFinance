@@ -31,11 +31,11 @@ class GenericParser(BaseParser):
         """
         try:
             title = raw_content.get("title")
-            link = raw_content.get("link")
+            article_url = raw_content.get("link")
             published_parsed = raw_content.get("published_parsed")
             summary = raw_content.get("summary") or raw_content.get("description")
 
-            if not title or not link:
+            if not title or not article_url:
                 logger.warning(f"Skipping incomplete RSS entry: {title or 'N/A'}")
                 return None
 
@@ -63,9 +63,9 @@ class GenericParser(BaseParser):
             # 3. links with image type
             if not thumbnail:
                 links = raw_content.get("links", [])
-                for link in links:
-                    if link.get("type", "").startswith("image/"):
-                        thumbnail = link.get("href")
+                for link_item in links:
+                    if link_item.get("type", "").startswith("image/"):
+                        thumbnail = link_item.get("href")
                         break
 
             # 4. extracted from summary HTML
@@ -84,7 +84,7 @@ class GenericParser(BaseParser):
 
             return {
                 "title": title,
-                "url": link,
+                "url": article_url,
                 "thumbnail": thumbnail,
                 "published_at": published_at,
                 "summary": clean_summary,

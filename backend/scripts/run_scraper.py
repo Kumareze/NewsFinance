@@ -12,7 +12,10 @@ import sys
 import os
 
 # Add the backend directory to Python path so 'app' can be imported
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+repo_root = os.path.dirname(backend_dir)
+sys.path.insert(0, backend_dir)
+sys.path.insert(0, repo_root)
 
 import logging
 from datetime import datetime, timezone
