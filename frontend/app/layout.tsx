@@ -16,9 +16,9 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..900&family=Inter:wght@400..700&display=swap" rel="stylesheet" />
       </head>
-      <body className="antialiased min-h-screen flex flex-col justify-between">
+      <body className="antialiased min-h-screen flex flex-col bg-[#09090B] text-[#e5e2e1]">
         {children}
       </body>
     </html>

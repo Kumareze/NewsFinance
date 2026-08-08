@@ -30,22 +30,22 @@ export default function SearchBar({
   }, [onSearch]);
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full max-w-[720px]">
+    <form onSubmit={handleSubmit} className="relative w-full max-w-[720px] group">
       <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-        <Search className="h-5 w-5 text-[#71717A]" />
+        <Search className="h-5 w-5 text-[#71717A] group-focus-within:text-white transition-colors" />
       </div>
       <input
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-12 pr-12 py-3 bg-[#27272A] border border-[#3F3F46] rounded-xl text-[#FAFAFA] placeholder-[#71717A] focus:outline-none focus:border-[#22C55E] text-sm transition-colors"
+        className="w-full pl-12 pr-12 py-4 bg-[#18181B] border border-[#3F3F46] rounded-[14px] text-white placeholder-[#71717A] focus:outline-none focus:border-[#444748] focus:ring-1 focus:ring-[#444748] transition-all shadow-sm hover:border-[#444748] text-base"
       />
       {value && (
         <button
           type="button"
           onClick={handleClear}
-          className="absolute inset-y-0 right-4 flex items-center text-[#71717A] hover:text-[#FAFAFA] transition-colors"
+          className="absolute inset-y-0 right-4 flex items-center text-[#71717A] hover:text-white transition-colors"
         >
           <X className="h-4 w-4" />
         </button>

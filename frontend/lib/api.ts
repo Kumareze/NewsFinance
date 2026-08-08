@@ -30,6 +30,7 @@ export interface NewsArticle {
   source_name: string;
   summary: string;
   content: string | null;
+  thumbnail: string | null;
   sentiment: "positive" | "negative" | "neutral";
   confidence: number;
   published_at: string;

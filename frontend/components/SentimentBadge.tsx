@@ -17,29 +17,31 @@ const SENTIMENT_LABELS: Record<Sentiment, string> = {
 };
 
 const SENTIMENT_STYLES: Record<Sentiment, string> = {
-  positive: "bg-green-900/50 text-green-400 border-green-700",
-  negative: "bg-red-900/50 text-red-400 border-red-700",
-  neutral: "bg-gray-700/50 text-gray-300 border-gray-600",
+  positive: "bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20",
+  negative: "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20",
+  neutral: "bg-[#71717A]/10 text-[#A1A1AA] border-[#3F3F46]",
 };
 
 export default function SentimentBadge({ sentiment, confidence }: SentimentBadgeProps) {
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border",
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-semibold uppercase tracking-wider border",
         SENTIMENT_STYLES[sentiment]
       )}
     >
       <span
         className={clsx("w-1.5 h-1.5 rounded-full", {
-          "bg-green-400": sentiment === "positive",
-          "bg-red-400": sentiment === "negative",
-          "bg-gray-400": sentiment === "neutral",
+          "bg-[#22C55E]": sentiment === "positive",
+          "bg-[#EF4444]": sentiment === "negative",
+          "bg-[#71717A]": sentiment === "neutral",
         })}
       />
       {SENTIMENT_LABELS[sentiment]}
       {confidence !== undefined && (
-        <span className="opacity-60 ml-0.5">({(confidence * 100).toFixed(0)}%)</span>
+        <span className="opacity-60 ml-0.5 normal-case font-normal">
+          ({(confidence * 100).toFixed(0)}%)
+        </span>
       )}
     </span>
   );

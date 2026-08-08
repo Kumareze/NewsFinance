@@ -4,7 +4,7 @@ import React from "react";
 import clsx from "clsx";
 
 type SentimentFilter = "" | "positive" | "negative" | "neutral";
-type SortOption = "latest" | "oldest" | "positive" | "negative";
+type SortOption = "latest" | "oldest" | "positive" | "negative" | "mixed";
 
 interface FilterBarProps {
   sentiment: SentimentFilter;
@@ -22,6 +22,7 @@ const SENTIMENT_OPTIONS: { label: string; value: SentimentFilter }[] = [
 
 const SORT_OPTIONS: { label: string; value: SortOption }[] = [
   { label: "Latest", value: "latest" },
+  { label: "Mixed (Round-robin)", value: "mixed" },
   { label: "Oldest", value: "oldest" },
   { label: "Most Positive", value: "positive" },
   { label: "Most Negative", value: "negative" },

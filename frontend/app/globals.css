@@ -6,7 +6,7 @@
   --background: #09090B;
   --secondary-background: #18181B;
   --card-background: #27272A;
-  --foreground: #FAFAFA;
+  --foreground: #e5e2e1;
   --secondary-text: #A1A1AA;
   --muted: #71717A;
   --positive: #22C55E;
@@ -19,4 +19,8 @@ body {
   color: var(--foreground);
   background-color: var(--background);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
 }
