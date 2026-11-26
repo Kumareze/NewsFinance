@@ -11,34 +11,51 @@ import type { NewsArticle } from "@/lib/api";
 interface NewsCardProps {
   article: NewsArticle;
   showSentimentBadge?: boolean;
+  featured?: boolean;
 }
 
-export default function NewsCard({ article, showSentimentBadge = true }: NewsCardProps) {
+export default function NewsCard({
+  article,
+  showSentimentBadge = true,
+  featured = false,
+}: NewsCardProps) {
   return (
-    <Link href={`/news/${article.slug}`} className="group block h-full">
-      <article className="bg-[#27272A] border border-[#3F3F46] rounded-2xl overflow-hidden flex flex-col cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg hover:shadow-black/20 h-full">
+    <Link
+      href={`/news/${article.slug}`}
+      className="group block h-full rounded-card focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
+      <article className="h-full flex flex-col overflow-hidden rounded-card bg-card border border-border shadow-card transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-card-hover">
         <NewsCardImage
           src={article.thumbnail}
           alt={article.title}
-          className="w-full aspect-video"
+          className={featured ? "w-full aspect-[16/10]" : "w-full aspect-video"}
         />
         <div className="p-5 flex flex-col flex-grow gap-3">
           {showSentimentBadge && (
-            <div className="flex items-center">
-              <SentimentBadge sentiment={article.sentiment} confidence={article.confidence} />
+            <div>
+              <SentimentBadge sentiment={article.sentiment} />
             </div>
           )}
-          <h3 className="font-headline text-[20px] leading-snug font-semibold text-white line-clamp-2 group-hover:text-white transition-colors">
+          <h3
+            className={
+              featured
+                ? "font-headline text-xl md:text-2xl font-bold leading-snug text-foreground line-clamp-2"
+                : "font-headline text-base font-semibold leading-snug text-foreground line-clamp-2"
+            }
+          >
             {article.title}
           </h3>
-          <div className="mt-auto pt-4 flex items-center gap-3 text-[#71717A] text-sm">
-            <span className="flex items-center gap-1.5">
-              <Building2 className="w-4 h-4" />
-              {article.source_name}
+          {featured && article.summary && (
+            <p className="text-sm text-text-secondary line-clamp-2">{article.summary}</p>
+          )}
+          <div className="mt-auto pt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-secondary">
+            <span className="flex items-center gap-1.5 min-w-0">
+              <Building2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+              <span className="truncate">{article.source_name}</span>
             </span>
-            <span>•</span>
+            <span aria-hidden="true">•</span>
             <span className="flex items-center gap-1.5">
-              <CalendarDays className="w-4 h-4" />
+              <CalendarDays className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
               <time dateTime={article.published_at}>
                 {formatRelativeTime(article.published_at)}
               </time>

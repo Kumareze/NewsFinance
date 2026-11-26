@@ -17,9 +17,9 @@ const SENTIMENT_LABELS: Record<Sentiment, string> = {
 };
 
 const SENTIMENT_STYLES: Record<Sentiment, string> = {
-  positive: "bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20",
-  negative: "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20",
-  neutral: "bg-[#71717A]/10 text-[#A1A1AA] border-[#3F3F46]",
+  positive: "bg-positive/10 text-positive border-positive/20",
+  negative: "bg-negative/10 text-negative border-negative/20",
+  neutral: "bg-muted/10 text-text-secondary border-border",
 };
 
 export default function SentimentBadge({ sentiment, confidence }: SentimentBadgeProps) {
@@ -32,9 +32,9 @@ export default function SentimentBadge({ sentiment, confidence }: SentimentBadge
     >
       <span
         className={clsx("w-1.5 h-1.5 rounded-full", {
-          "bg-[#22C55E]": sentiment === "positive",
-          "bg-[#EF4444]": sentiment === "negative",
-          "bg-[#71717A]": sentiment === "neutral",
+          "bg-positive": sentiment === "positive",
+          "bg-negative": sentiment === "negative",
+          "bg-muted": sentiment === "neutral",
         })}
       />
       {SENTIMENT_LABELS[sentiment]}

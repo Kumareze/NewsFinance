@@ -10,26 +10,26 @@ interface SkeletonProps {
 export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
+      aria-hidden="true"
       className={clsx(
-        "animate-pulse rounded-md bg-[#27272A]",
+        "animate-pulse rounded-md bg-hover",
         className
       )}
     />
   );
 }
 
-export function NewsCardSkeleton() {
+export function NewsCardSkeleton({ featured = false }: { featured?: boolean }) {
   return (
-    <div className="bg-[#27272A] rounded-2xl border border-[#3F3F46] overflow-hidden flex flex-col">
-      <Skeleton className="w-full aspect-video" />
+    <div className="bg-card rounded-card border border-border overflow-hidden flex flex-col">
+      <Skeleton className={featured ? "w-full aspect-[16/10]" : "w-full aspect-video"} />
       <div className="p-5 flex flex-col gap-3">
-        <Skeleton className="h-6 w-24 rounded-full" />
-        <Skeleton className="h-5 w-full" />
-        <Skeleton className="h-5 w-4/5" />
-        <div className="pt-4 flex items-center gap-3">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-4 w-1" />
-          <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-5 w-24 rounded-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-4/5" />
+        <div className="pt-3 flex items-center gap-3">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-3 w-16" />
         </div>
       </div>
     </div>

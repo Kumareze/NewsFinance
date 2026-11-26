@@ -3,24 +3,23 @@
 @tailwind utilities;
 
 :root {
-  --background: #09090B;
-  --secondary-background: #18181B;
-  --card-background: #27272A;
-  --foreground: #e5e2e1;
-  --secondary-text: #A1A1AA;
-  --muted: #71717A;
-  --positive: #22C55E;
-  --negative: #EF4444;
-  --border: #3F3F46;
-  --hover: #3F3F46;
+  --background: 9 9 11; /* #09090B */
+  --secondary-background: 24 24 27; /* #18181B */
+  --card-background: 39 39 42; /* #27272A */
+  --foreground: 250 250 250; /* #FAFAFA */
+  --text-secondary: 161 161 170; /* #A1A1AA */
+  --muted: 113 113 122; /* #71717A */
+  --positive: 34 197 94; /* #22C55E */
+  --negative: 239 68 68; /* #EF4444 */
+  --border: 63 63 70; /* #3F3F46 */
+  --hover: 63 63 70; /* #3F3F46 */
 }
 
 body {
-  color: var(--foreground);
-  background-color: var(--background);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: rgb(var(--foreground));
+  background-color: rgb(var(--background));
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-geist), var(--font-inter), system-ui, sans-serif;
 }

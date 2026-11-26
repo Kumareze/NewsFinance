@@ -10,21 +10,21 @@ interface ErrorStateProps {
 }
 
 export default function ErrorState({
-  title = "Something went wrong",
-  message = "Failed to load data. Please try again.",
+  title = "Unable to Load News",
+  message = "Gagal memuat berita. Periksa koneksi lalu coba lagi.",
   onRetry,
 }: ErrorStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <AlertTriangle className="w-12 h-12 text-red-400 mb-4" />
-      <h3 className="text-lg font-semibold text-[#FAFAFA] mb-1">{title}</h3>
-      <p className="text-sm text-[#A1A1AA] max-w-md mb-6">{message}</p>
+    <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+      <AlertTriangle className="w-10 h-10 text-negative mb-4" aria-hidden="true" />
+      <h3 className="font-headline text-lg font-semibold text-foreground mb-1">{title}</h3>
+      <p className="text-sm text-text-secondary max-w-md mb-6">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#27272A] border border-[#3F3F46] text-sm text-[#FAFAFA] hover:bg-[#3F3F46] transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border text-sm font-semibold text-foreground hover:bg-hover transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="w-4 h-4" aria-hidden="true" />
           Retry
         </button>
       )}

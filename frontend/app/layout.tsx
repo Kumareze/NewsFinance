@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
+import { Inter, Geist } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist",
+});
+
 export const metadata: Metadata = {
-  title: "FinPulse - Indonesian Financial News Aggregator",
-  description: "Track financial intelligence with real-time sentiment analysis",
+  title: "FinPulse - Berita Keuangan Indonesia",
+  description: "Baca berita keuangan Indonesia berdasarkan sentimen.",
 };
 
 export default function RootLayout({
@@ -12,15 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..900&family=Inter:wght@400..700&display=swap" rel="stylesheet" />
-      </head>
-      <body className="antialiased min-h-screen flex flex-col bg-[#09090B] text-[#e5e2e1]">
+    <html lang="id" className={`${inter.variable} ${geist.variable}`}>
+      <body className="font-body antialiased min-h-screen flex flex-col bg-background text-foreground">
         {children}
       </body>
     </html>
   );
 }
+

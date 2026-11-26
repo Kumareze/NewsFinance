@@ -9,18 +9,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        card: "var(--card-background)",
-        border: "var(--border)",
-        positive: "var(--positive)",
-        negative: "var(--negative)",
-        muted: "var(--muted)",
+        background: "rgb(var(--background) / <alpha-value>)",
+        secondary: "rgb(var(--secondary-background) / <alpha-value>)",
+        card: "rgb(var(--card-background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
+        "text-secondary": "rgb(var(--text-secondary) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
+        positive: "rgb(var(--positive) / <alpha-value>)",
+        negative: "rgb(var(--negative) / <alpha-value>)",
+        border: "rgb(var(--border) / <alpha-value>)",
+        hover: "rgb(var(--hover) / <alpha-value>)",
       },
       fontFamily: {
-        display: ["Geist", "Inter", "sans-serif"],
-        headline: ["Geist", "Inter", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+        display: ["var(--font-geist)", "var(--font-inter)", "sans-serif"],
+        headline: ["var(--font-geist)", "var(--font-inter)", "sans-serif"],
+        body: ["var(--font-inter)", "sans-serif"],
+      },
+      borderRadius: {
+        card: "1rem",
+      },
+      boxShadow: {
+        card: "0 1px 2px 0 rgb(0 0 0 / 0.4)",
+        "card-hover": "0 10px 24px -8px rgb(0 0 0 / 0.6)",
       },
       fontSize: {
         "display-hero": ["48px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],

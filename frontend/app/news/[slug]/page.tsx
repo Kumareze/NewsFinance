@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, ExternalLink, Newspaper, Calendar } from "lucide-react";
-import TopNavBar from "@/components/TopNavBar";
+import { ArrowLeft, ExternalLink, Building2, CalendarDays } from "lucide-react";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SentimentBadge from "@/components/SentimentBadge";
+import NewsCardImage from "@/components/NewsCardImage";
 import { Skeleton } from "@/components/Skeleton";
 import ErrorState from "@/components/ErrorState";
+import { formatLongDate } from "@/lib/format";
 import { api, NewsArticle } from "@/lib/api";
 
 export default function ArticleDetailPage() {
@@ -26,8 +28,7 @@ export default function ArticleDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const result = await api.getNewsBySlug(slug);
-        setArticle(result);
+        setArticle(await api.getNewsBySlug(slug));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load article");
       } finally {
@@ -38,127 +39,95 @@ export default function ArticleDetailPage() {
     fetchArticle();
   }, [slug]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#09090B] text-white flex flex-col">
-        <TopNavBar />
-        <main className="flex-grow pt-24 pb-12 px-6 md:px-[24px] max-w-[1440px] mx-auto w-full">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <Skeleton className="h-6 w-32" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-3/4" />
-            <div className="flex gap-4">
-              <Skeleton className="h-5 w-24 rounded-full" />
-              <Skeleton className="h-5 w-32" />
-            </div>
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-4/5" />
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#09090B] text-white flex flex-col">
-        <TopNavBar />
-        <main className="flex-grow pt-24 pb-12 px-6 md:px-[24px] max-w-[1440px] mx-auto w-full">
-          <div className="max-w-3xl mx-auto">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-sm text-[#71717A] hover:text-white mb-8 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to articles
-            </Link>
-            <ErrorState message={error} onRetry={() => window.location.reload()} />
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!article) return null;
-
-  const publishedDate = new Date(article.published_at).toLocaleDateString("en-ID", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const backLink = (
+    <Link
+      href="/"
+      className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-foreground transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
+    >
+      <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+      Kembali
+    </Link>
+  );
 
   return (
-    <div className="min-h-screen bg-[#09090B] text-white flex flex-col">
-      <TopNavBar />
+    <div className="min-h-screen bg-background flex flex-col">
+      <Header />
 
-      {/* Article */}
-      <main className="flex-grow pt-24 pb-12 px-6 md:px-[24px] max-w-[1440px] mx-auto w-full">
-        <article className="max-w-3xl mx-auto">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-[#71717A] hover:text-white mb-8 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to articles
-          </Link>
+      <main className="flex-grow w-full max-w-[1440px] mx-auto px-6 py-10">
+        <div className="max-w-3xl mx-auto">
+          {backLink}
 
-          {/* Meta */}
-          <div className="flex flex-wrap items-center gap-4 mb-6">
-            <SentimentBadge sentiment={article.sentiment} confidence={article.confidence} />
-            <div className="flex items-center gap-2 text-sm text-[#71717A]">
-              <Newspaper className="w-4 h-4" />
-              <span>{article.source_name}</span>
+          {loading ? (
+            <div className="mt-8 flex flex-col gap-5" aria-busy="true">
+              <Skeleton className="w-full aspect-video rounded-card" />
+              <Skeleton className="h-9 w-full" />
+              <Skeleton className="h-9 w-3/4" />
+              <div className="flex gap-4">
+                <Skeleton className="h-6 w-24 rounded-full" />
+                <Skeleton className="h-6 w-32" />
+              </div>
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-4/5" />
             </div>
-            <div className="flex items-center gap-2 text-sm text-[#71717A]">
-              <Calendar className="w-4 h-4" />
-              <time dateTime={article.published_at}>{publishedDate}</time>
+          ) : error ? (
+            <div className="mt-8 rounded-card border border-border bg-card">
+              <ErrorState message={error} onRetry={() => window.location.reload()} />
             </div>
-          </div>
+          ) : !article ? null : (
+            <article className="mt-8 flex flex-col gap-6">
+              <NewsCardImage
+                src={article.thumbnail}
+                alt={article.title}
+                className="w-full aspect-video rounded-card border border-border"
+              />
 
-          {/* Title */}
-          <h1 className="font-headline text-3xl md:text-4xl font-bold leading-tight mb-6">
-            {article.title}
-          </h1>
+              <h1 className="font-headline text-3xl md:text-4xl font-bold leading-tight text-foreground">
+                {article.title}
+              </h1>
 
-          {/* Summary */}
-          <div className="p-4 bg-[#27272A] border border-[#3F3F46] rounded-xl mb-8">
-            <p className="text-sm text-[#A1A1AA] italic leading-relaxed">
-              {article.summary}
-            </p>
-          </div>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-text-secondary">
+                <span className="flex items-center gap-2">
+                  <Building2 className="w-4 h-4" aria-hidden="true" />
+                  {article.source_name}
+                </span>
+                <span className="flex items-center gap-2">
+                  <CalendarDays className="w-4 h-4" aria-hidden="true" />
+                  <time dateTime={article.published_at}>{formatLongDate(article.published_at)}</time>
+                </span>
+                <SentimentBadge sentiment={article.sentiment} />
+              </div>
 
-          {/* Content */}
-          {article.content ? (
-            <div className="prose prose-invert prose-sm max-w-none text-[#D4D4D8] leading-relaxed whitespace-pre-wrap">
-              {article.content}
-            </div>
-          ) : (
-            <p className="text-[#71717A] text-sm italic">
-              Full content is not available for this article.
-            </p>
+              {article.summary && (
+                <p className="p-5 rounded-card bg-card border border-border text-text-secondary leading-relaxed">
+                  {article.summary}
+                </p>
+              )}
+
+              {article.content ? (
+                <div className="text-text-secondary leading-relaxed whitespace-pre-wrap">
+                  {article.content}
+                </div>
+              ) : (
+                <p className="text-sm text-muted">
+                  Isi lengkap tidak tersedia. Baca berita aslinya di {article.source_name}.
+                </p>
+              )}
+
+              <div className="pt-6 border-t border-border">
+                <a
+                  href={article.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-foreground hover:text-text-secondary transition-colors rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
+                >
+                  <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                  Baca artikel asli
+                </a>
+              </div>
+            </article>
           )}
-
-          {/* Source link */}
-          <div className="mt-12 pt-6 border-t border-[#3F3F46]">
-            <a
-              href={article.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-[#22C55E] hover:text-[#4ADE80] transition-colors"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Read original article
-            </a>
-          </div>
-        </article>
+        </div>
       </main>
 
       <Footer />

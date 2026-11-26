@@ -5,55 +5,68 @@ import EmptyState from "./EmptyState";
 import clsx from "clsx";
 import type { NewsArticle } from "@/lib/api";
 
+type Sentiment = NewsArticle["sentiment"];
+
 interface NewsSectionProps {
+  id?: string;
   title: string;
-  dotColor: string;
-  dotShadowClass?: string;
+  sentiment: Sentiment;
   articles: NewsArticle[];
   loading: boolean;
-  error?: string | null;
-  showSentimentBadge?: boolean;
+  /** Total artikel di backend untuk sentiment ini (bukan jumlah di halaman ini). */
+  total: number;
+  emptyMessage?: string;
 }
 
+/** Dot penanda sentiment, dengan label teks di sebelahnya (bukan warna saja). */
+const DOT_STYLES: Record<Sentiment, string> = {
+  positive: "bg-positive",
+  negative: "bg-negative",
+  neutral: "bg-muted",
+};
+
 export default function NewsSection({
+  id,
   title,
-  dotColor,
-  dotShadowClass,
+  sentiment,
   articles,
   loading,
-  error,
-  showSentimentBadge = true,
+  total,
+  emptyMessage,
 }: NewsSectionProps) {
+  const [featured, ...rest] = articles;
+  const headingId = `${id ?? sentiment}-heading`;
+
   return (
-    <section className="flex flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <div className={clsx("w-3 h-3 rounded-full", dotColor, dotShadowClass)} />
-        <h2 className="font-headline text-2xl md:text-[32px] font-bold text-white">
+    <section id={id} aria-labelledby={headingId} className="flex flex-col gap-6">
+      <div className="flex items-baseline justify-between gap-4 border-b border-border pb-4">
+        <h2 id={headingId} className="flex items-center gap-3 font-headline text-2xl font-bold text-foreground">
+          <span className={clsx("w-2.5 h-2.5 rounded-full shrink-0", DOT_STYLES[sentiment])} aria-hidden="true" />
           {title}
         </h2>
+        <span className="text-sm text-text-secondary tabular-nums">
+          {loading ? "Loading..." : `${total} articles`}
+        </span>
       </div>
 
-      {error ? (
-        <p className="text-sm text-[#71717A]">Failed to load {title.toLowerCase()}.</p>
-      ) : loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[24px]">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <NewsCardSkeleton key={i} />
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <NewsCardSkeleton key={i} featured={i === 0} />
           ))}
         </div>
-      ) : articles.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[24px]">
-          {articles.map((article) => (
-            <NewsCard
-              key={article.id}
-              article={article}
-              showSentimentBadge={showSentimentBadge}
-            />
-          ))}
+      ) : !featured ? (
+        <div className="rounded-card border border-border bg-card">
+          <EmptyState message={emptyMessage} />
         </div>
       ) : (
-        <div className="rounded-2xl border border-[#3F3F46] bg-[#27272A]">
-          <EmptyState />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="md:col-span-2 md:row-span-2">
+            <NewsCard article={featured} featured />
+          </div>
+          {rest.map((article) => (
+            <NewsCard key={article.id} article={article} />
+          ))}
         </div>
       )}
     </section>
