@@ -1,36 +1,97 @@
 # FinPulse
 
-FinPulse is a production-ready Financial News Aggregator that collects Indonesian financial news, stores it in PostgreSQL, performs sentiment analysis, and displays it through a modern Next.js frontend.
+Agregator berita keuangan Indonesia. Berita diambil otomatis dari beberapa penerbit, ditandai sentimennya sebagai **positif** atau **negatif**, lalu disajikan dalam antarmuka baca yang dipisah per sentimen.
 
-This platform is designed to aggregate market intelligence cleanly, classify sentiment as positive or negative, and serve as an elite portfolio project showcasing clean architecture, SOLID principles, and high-quality software engineering practices.
+Isi repositori: API FastAPI, frontend Next.js, dan worker scraper Python yang berbagi model database yang sama.
 
-## Project Structure
+## Sekilas
+
+| Atribut | Nilai |
+| --- | --- |
+| Tujuan | Membaca berita keuangan Indonesia berdasarkan sentimen |
+| Pengambilan berita | Otomatis tiap 30 menit (`SCRAPER_INTERVAL`) |
+| Sumber berita | Didaftarkan di tabel `news_sources`: nama, situs, URL RSS, status aktif |
+| Backend | FastAPI, prefix `/api/v1`, dokumentasi di `/docs` |
+| Frontend | Next.js App Router, data dari `NEXT_PUBLIC_API_URL` |
+| Basis data | PostgreSQL, skema lewat Alembic |
+
+## Cara Kerja
+
+```text
+Penerbit (RSS/HTML)
+        │
+        ▼
+scraper/   fetch → parse → validasi → cek duplikat → klasifikasi sentimen
+        │
+        ▼
+PostgreSQL   news_sources · news · scrape_logs
+        │
+        ▼
+backend/   FastAPI  /api/v1
+        │
+        ▼
+frontend/  Next.js  Header → Hero → Search → Positive → Negative
+```
+
+1. **Ambil.** `scraper/fetchers` menarik feed RSS atau halaman HTML tiap sumber berita yang aktif.
+2. **Urai.** `scraper/parsers` mengambil judul, ringkasan, isi, URL, thumbnail, dan waktu terbit. Ada parser khusus CNBC dan Reuters, sisanya parser generik.
+3. **Saring.** Validasi dan normalisasi membuang artikel tidak lengkap lalu menyeragamkan teks dan tanggal.
+4. **Cek duplikat.** Artikel dengan URL yang sudah ada tidak disimpan dua kali.
+5. **Klasifikasi.** `backend/app/sentiment/analyzer.py` menghitung kata kunci positif dan negatif, memperhitungkan kata penyangkal, lalu memberi label `positive`, `negative`, atau `neutral`.
+6. **Sajikan.** Frontend membaca daftar berita dan halaman detail dari API.
+
+Repositori:
 
 ```text
 finpulse/
-├── backend/          # FastAPI Backend API
-├── frontend/         # Next.js Frontend (App Router)
-├── scraper/          # Python News Scraper & Sentiment Engine
-├── docs/             # Technical Documentation & Sprint Specs
-├── nginx/            # Nginx Reverse Proxy Configuration
-├── docker-compose.yml
-└── README.md
+├── backend/     # API FastAPI, model, service, repository, sentimen, Alembic
+├── frontend/    # Next.js: beranda dan detail /news/[slug]
+├── scraper/     # fetchers, parsers, pipelines, scheduler
+├── dosc/        # dokumen PRD, arsitektur, API, runbook
+├── nginx/       # reverse proxy Docker Compose
+└── docker-compose.yml
 ```
 
-## Tech Stack
+## API
 
-- **Backend:** Python 3.13 / 3.14, FastAPI, SQLAlchemy 2.x, Alembic, PostgreSQL (Supabase), Pydantic v2, uv
-- **Frontend:** Next.js, React, TypeScript, TailwindCSS, shadcn/ui
-- **Scraper & Sentiment:** httpx, BeautifulSoup4, feedparser, rule-based keyword matching (with model-based expansion capabilities)
-- **Deployment:** Docker, Docker Compose, Nginx, Ubuntu Server
+Base URL `/api/v1`.
 
-## Core Features
+| Metode | Path | Keterangan |
+| --- | --- | --- |
+| `GET` | `/news/` | Daftar berita: paginasi, filter sentimen dan sumber, sort, pencarian |
+| `GET` | `/news/{slug}` | Satu artikel berdasarkan slug |
+| `GET` | `/sources/` | Daftar sumber berita |
+| `GET` | `/sources/active` | Sumber berita aktif |
+| `GET` | `/health` | Health check ringan |
 
-- **Automated News Scraping:** Periodically pulls financial news feeds.
-- **Sentiment Engine:** Classifies incoming articles as Positive or Negative.
-- **REST API:** Fast, stateless API layer serving paginated, filtered, and searchable news.
-- **Responsive UI:** Content-first, minimal design with light/dark theme capabilities.
+Parameter `GET /news/`:
 
-## Getting Started
+| Parameter | Nilai | Bawaan |
+| --- | --- | --- |
+| `page` | >= 1 | `1` |
+| `page_size` | 1 sampai 100 | `20` |
+| `sentiment` | `positive`, `negative`, `neutral` | semua |
+| `source` | nama sumber | semua |
+| `sort` | `latest`, `oldest`, `positive`, `negative`, `mixed` | `latest` |
+| `q` | kata kunci judul | kosong |
 
-Instructions for local development and running via Docker are in the respective guides.
+Respons daftar berbentuk `{ items, total, page, page_size }`. Endpoint `POST`, `PUT`, `DELETE` untuk berita dan sumber tersedia untuk keperluan administratif.
+
+## Batasan
+
+- Pencarian hanya mencocokkan judul, belum isi artikel.
+- Pola pencarian `ILIKE` dibentuk langsung dari input, sehingga karakter `_` dan `%` bisa memberi hasil yang tidak sesuai harapan.
+- Sentimen memakai daftar kata kunci, bukan model bahasa, jadi artikel bernuansa campuran bisa salah kelas.
+- Backend menghasilkan label `neutral`, tetapi beranda hanya punya section Positive dan Negative; artikel netral hanya muncul di headline terbaru.
+- Filter dan sort didukung API namun belum ditampilkan di antarmuka.
+- Thumbnail dimuat sebagai `<img>` biasa karena domain gambar penerbit berbeda-beda.
+- Isi artikel tidak selalu tersedia dari RSS; halaman detail menyediakan tautan ke sumber asli.
+
+## Catatan Keamanan
+
+`SECRET_KEY` masih nilai pengembangan, CORS diatur `*`, dan endpoint tulis belum diautentikasi. Semuanya perlu dirapikan sebelum dibuka untuk publik.
+
+## Lisensi
+
+Lihat [`LICENSE`](LICENSE). Hak atas judul, ringkasan, gambar, dan isi artikel tetap milik penerbit masing-masing; repositori ini hanya mengumpulkan tautan dan metadata.
+

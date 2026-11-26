@@ -48,9 +48,9 @@ export interface NewsSearchResult {
 export interface NewsSource {
   id: string;
   name: string;
-  base_url: string;
-  is_active: boolean;
-  scrape_interval: number;
+  website: string;
+  rss_url: string;
+  active: boolean;
   created_at: string;
   updated_at: string;
 }
