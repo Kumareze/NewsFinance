@@ -1,5 +1,6 @@
 import React from "react";
 import NewsCard from "./NewsCard";
+import Pagination from "./Pagination";
 import { NewsCardSkeleton } from "./Skeleton";
 import EmptyState from "./EmptyState";
 import clsx from "clsx";
@@ -15,6 +16,9 @@ interface NewsSectionProps {
   loading: boolean;
   /** Total artikel di backend untuk sentiment ini (bukan jumlah di halaman ini). */
   total: number;
+  page: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
   emptyMessage?: string;
 }
 
@@ -32,10 +36,14 @@ export default function NewsSection({
   articles,
   loading,
   total,
+  page,
+  pageSize,
+  onPageChange,
   emptyMessage,
 }: NewsSectionProps) {
   const [featured, ...rest] = articles;
   const headingId = `${id ?? sentiment}-heading`;
+  const totalPages = Math.ceil(total / pageSize);
 
   return (
     <section id={id} aria-labelledby={headingId} className="flex flex-col gap-6">
@@ -68,6 +76,15 @@ export default function NewsSection({
             <NewsCard key={article.id} article={article} />
           ))}
         </div>
+      )}
+
+      {!loading && featured && (
+        <Pagination
+          label={title}
+          page={page}
+          totalPages={totalPages}
+          onChange={onPageChange}
+        />
       )}
     </section>
   );

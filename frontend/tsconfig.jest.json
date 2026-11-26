@@ -2,6 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "isolatedModules": false
-  }
+    "isolatedModules": false,
+    "types": ["jest", "node", "@testing-library/jest-dom"]
+  },
+  "include": ["next-env.d.ts", "jest.setup.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

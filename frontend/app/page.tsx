@@ -21,20 +21,35 @@ interface Feed {
   negative: NewsSearchResult;
 }
 
+type SectionKey = "positive" | "negative";
+
+const SECTIONS: {
+  id: SectionKey;
+  title: string;
+  sentiment: NewsArticle["sentiment"];
+  emptyMessage: string;
+}[] = [
+  { id: "positive", title: "Positive News", sentiment: "positive", emptyMessage: "Belum ada berita bersentimen positif." },
+  { id: "negative", title: "Negative News", sentiment: "negative", emptyMessage: "Belum ada berita bersentimen negatif." },
+];
+
+type PageState = Record<SectionKey, number>;
+
 export default function Home() {
   const [query, setQuery] = useState("");
+  const [pages, setPages] = useState<PageState>({ positive: 1, negative: 1 });
   const [feed, setFeed] = useState<Feed | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFeed = useCallback(async (q: string) => {
+  const fetchFeed = useCallback(async (q: string, p: PageState) => {
     setLoading(true);
     setError(null);
     try {
       const [latest, positive, negative] = await Promise.all([
         api.getNews({ page: 1, page_size: 1, sort: "latest", q: q || undefined }),
-        api.getNews({ page: 1, page_size: SECTION_SIZE, sentiment: "positive", sort: "latest", q: q || undefined }),
-        api.getNews({ page: 1, page_size: SECTION_SIZE, sentiment: "negative", sort: "latest", q: q || undefined }),
+        api.getNews({ page: p.positive, page_size: SECTION_SIZE, sentiment: "positive", sort: "latest", q: q || undefined }),
+        api.getNews({ page: p.negative, page_size: SECTION_SIZE, sentiment: "negative", sort: "latest", q: q || undefined }),
       ]);
       setFeed({ latest: latest.items, positive, negative });
     } catch (err) {
@@ -45,10 +60,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    fetchFeed(query);
-  }, [fetchFeed, query]);
+    fetchFeed(query, pages);
+  }, [fetchFeed, query, pages]);
 
-  const retry = () => fetchFeed(query);
+  /** Ganti halaman satu section, lalu bawa viewport ke judul section itu. */
+  const changePage = useCallback((id: SectionKey, page: number) => {
+    setPages((prev) => (prev[id] === page ? prev : { ...prev, [id]: page }));
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  const retry = () => fetchFeed(query, pages);
   const latest = feed?.latest[0] ?? null;
 
   return (
@@ -63,7 +84,14 @@ export default function Home() {
           </h1>
           <p className="mt-3 text-lg text-text-secondary">Read Financial News by Sentiment</p>
           <div id="search" className="w-full mt-8 flex justify-center scroll-mt-24">
-            <SearchBar onSearch={setQuery} initialValue={query} placeholder="Search financial news..." />
+            <SearchBar
+              onSearch={(q) => {
+                setPages({ positive: 1, negative: 1 });
+                setQuery(q);
+              }}
+              initialValue={query}
+              placeholder="Search financial news..."
+            />
           </div>
           {query && (
             <p className="mt-4 text-sm text-text-secondary">
@@ -110,24 +138,24 @@ export default function Home() {
             </section>
 
             <div className="flex flex-col gap-16 pt-4">
-              <NewsSection
-                id="positive"
-                title="Positive News"
-                sentiment="positive"
-                articles={feed?.positive.items ?? []}
-                total={feed?.positive.total ?? 0}
-                loading={loading}
-                emptyMessage="Belum ada berita bersentimen positif."
-              />
-              <NewsSection
-                id="negative"
-                title="Negative News"
-                sentiment="negative"
-                articles={feed?.negative.items ?? []}
-                total={feed?.negative.total ?? 0}
-                loading={loading}
-                emptyMessage="Belum ada berita bersentimen negatif."
-              />
+              {SECTIONS.map((section) => {
+                const result = feed?.[section.id];
+                return (
+                  <NewsSection
+                    key={section.id}
+                    id={section.id}
+                    title={section.title}
+                    sentiment={section.sentiment}
+                    articles={result?.items ?? []}
+                    total={result?.total ?? 0}
+                    page={pages[section.id]}
+                    pageSize={SECTION_SIZE}
+                    onPageChange={(page) => changePage(section.id, page)}
+                    loading={loading}
+                    emptyMessage={section.emptyMessage}
+                  />
+                );
+              })}
             </div>
           </>
         )}
